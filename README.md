@@ -37,7 +37,7 @@ See that example to inject a redis client with some parameters:
 container[:redis_config] = {:host => 'localhost', :port => 6379}
 
 # Defining the redis client into Pimple
-container[:redis] = lambda { Redis.new(container[:redis_config]) }
+container[:redis] = lambda { |c| Redis.new(c[:redis_config]) }
 
 # And get an instance
 container[:redis] # => #<Redis client v2.1.1 connected to redis://localhost:6379/0 (Redis v2.2.2)>
