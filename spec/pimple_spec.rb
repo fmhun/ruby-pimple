@@ -17,16 +17,21 @@ describe Pimple do
   
   describe '.[]' do
     let(:container) { Pimple.new }
-    before { class Facebook; end; } # Simulate Facebook Api Client class
     
     it 'should inject service' do
-      container[:facebook] = lambda { |c| Facebook.new }
-      container[:facebook].class.should equal(Facebook)
+      container[:service] = lambda { |c| Service.new }
+      container[:service].class.should equal(Service)
+    end
+    
+    it 'should inject configuring service from container parameters' do
+      container[:foo] = 'bar'
+      container[:service] = lambda { |c| Service.new(c[:foo]) }
+      container[:service].param.should == 'bar'
     end
     
     it 'should return a new instance each time the [](key) method is invoked' do
-      container[:facebook] = lambda { |c| Facebook.new }
-      container[:facebook].should_not equal(container[:facebook])
+      container[:service] = lambda { |c| Service.new }
+      container[:service].should_not equal(container[:service])
     end
     
     it 'should raise KeyError if service not found' do
@@ -56,16 +61,21 @@ describe Pimple do
   
   describe '.share' do
     let(:container) { Pimple.new }
-    before { class Facebook; end; } # Simulate Facebook Api Client class
     
-    it 'should define shared (global) service' do
-      container[:facebook] = container.share { |c| Facebook.new }
-      container[:facebook].class.should equal(Facebook)
+    it 'should define shared service' do
+      container[:service] = container.share { |c| Service.new }
+      container[:service].class.should equal(Service)
+    end
+    
+    it 'should inject configuring shared service from container parameters' do
+      container[:foo] = 'bar'
+      container[:service] = container.share { |c| Service.new(c[:foo]) }
+      container[:service].param.should == 'bar'
     end
     
     it 'should get the same instance each time [](key) method is invoked' do
-       container[:facebook] = container.share { |c| Facebook.new }
-       container[:facebook].should equal(container[:facebook])
+       container[:service] = container.share { |c| Service.new }
+       container[:service].should equal(container[:service])
     end
     
   end

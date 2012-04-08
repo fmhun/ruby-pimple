@@ -11,3 +11,10 @@ require 'pimple'
 RSpec.configure do |config|
 	config.filter_run_excluding :broken => true
 end
+
+class Service 
+  attr_reader :param
+  def initialize(param=nil)
+    @param = param
+  end
+end
