@@ -2,11 +2,22 @@
 
 This is the Ruby implementation of Pimple, originally a leightweight Dependancy Injection library written in PHP and created by Fabien Potencier.
 
+Refer to [the original documentation](http://pimple.sensiolabs.org/) for more details about Pimple, you could found better explanations on the topic.
+
 ## Installation
 
-```ruby
-container = Pimple.new
+Install with RubyGems :
+
+```shell
+sudo gem install pimple
 ```
+
+Then, create the container : 
+
+```ruby
+require 'pimple'
+container = Pimple.new
+``` 
 
 ## Define parameter
 
