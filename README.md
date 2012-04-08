@@ -11,14 +11,14 @@ container = Pimple.new
 ## Define parameter
 
 ```ruby
-container[:foo] = 'value'
-container[:foo] # => value
+container[:foo] = 'bar'
+container[:foo] # => bar
 ```
 
 ## Wrap anonymous function as parameter
 
 ```ruby
-container.protect(:random) { rand(100) }
+container.protect { rand(100) }
 
 # First time
 container[:random] # => 12
@@ -50,7 +50,7 @@ container[:redis] # => #<Redis client v2.1.1 connected to redis://localhost:6379
 Sometimes, you need to work with the same instance each time you access to your service. Use `share` method as shown as below :
 
 ```ruby
-container[:session_storage] = container.share(:session_storage) { Redis.new }
+container[:session_storage] = container.share { Redis.new }
 ```
 
 ## Extend services
