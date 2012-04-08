@@ -19,22 +19,11 @@ require 'pimple'
 container = Pimple.new
 ``` 
 
-## Define parameter
+## Defining parameter
 
 ```ruby
 container[:foo] = 'bar'
 container[:foo] # => bar
-```
-
-## Wrap anonymous function as parameter
-
-```ruby
-container.protect { rand(100) }
-
-# First time
-container[:random] # => 12
-# Second time
-container[:random] # => 48
 ```
 
 ## Defining services
@@ -56,12 +45,28 @@ container[:redis] # => #<Redis client v2.1.1 connected to redis://localhost:6379
 
 **Important!** : Each time you get a service by its key, Pimple will call your defined lambda and then return a new instance.
 
-## Shared services (Singleton like)
+## Defining shared services (Singleton like)
 
 Sometimes, you need to work with the same instance each time you access to your service. Use `share` method as shown as below :
 
 ```ruby
 container[:session_storage] = container.share { Redis.new }
+```
+
+## Defining protected parameter (Wrap anonymous function as parameter)
+
+Anonymous functions (lambda) can be passed to the container to provide a method that make something. To ensure the lambda will be not evaluated as a service, you need to use `protect` method. Then, when you get the value from the container, you just have to to access the container value to automatically call the function. 
+Let me show you an example with a random function : 
+
+```ruby
+# First of all, we inject the random function
+container[:random] = container.protect { rand(100) }
+
+# ... and sometime in the future, we want a random number.
+# So we call the function from the container by its key
+container[:random] # => 12
+# ... and get another one later !
+container[:random] # => 48
 ```
 
 ## Extend services
