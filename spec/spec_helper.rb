@@ -13,7 +13,7 @@ RSpec.configure do |config|
 end
 
 class Service 
-  attr_reader :param
+  attr_accessor :param
   def initialize(param=nil)
     @param = param
   end

@@ -44,13 +44,13 @@ describe Pimple do
     let(:container) { Pimple.new }
     
     it 'should define anonymous function as parameter' do
-      container[:lambda_param] = container.protect { rand(1000) }
-      container[:lambda_param].should_not equal(container[:lambda_param])
+      container[:protected] = container.protect { rand(1000) }
+      container[:protected].should_not equal(container[:protected])
     end
     
     it 'should define anonymous function as parameter by Proc.new way' do
-      container[:lambda_param] = Proc.new { rand(1000) }
-      container[:lambda_param].should_not equal(container[:lambda_param])
+      container[:protected] = Proc.new { rand(1000) }
+      container[:protected].should_not equal(container[:protected])
     end
     
     it 'should raise ArgumentError when block is missing' do
@@ -80,7 +80,62 @@ describe Pimple do
     
   end
   
-  describe '.extend', :pending => true do
+  describe '.raw' do
+    let(:container) { Pimple.new }
+    
+    it 'should return the anonymous function for the defined serivce' do
+      container[:service] = lambda { |c| Service.new }
+      container.raw(:service).kind_of?(Proc).should be_true
+    end
+    
+    it 'should raise KeyError exception if service not defined' do
+      lambda { container.raw :notfound }.should raise_error(KeyError)
+    end
+    
+  end
+  
+  describe '.extends' do
+    let(:container) { Pimple.new }
+    
+    it 'should extend a service definition' do
+      container[:service] = lambda { |c| Service.new }
+      container[:service] = container.extends(:service) do |service, c|
+        service.param = 'foo'
+        service
+      end
+      container[:service].param.should == 'foo'
+    end
+    
+    it 'should extend a shared service definition' do
+      container[:service] = container.share { |c| Service.new }
+      container[:service] = container.extends(:service) do |service, c|
+        service.param = 'foo'
+        service
+      end
+      container[:service].should equal(container[:service])
+      container[:service].param.should == 'foo'
+    end
+    
+    it 'should extend protected parameter' do
+      container[:protected] = container.protect { rand(100) }
+      container[:protected] = container.extends(:protected) do |p, c|
+        p + 200
+      end
+      container[:protected].should_not == container[:protected]
+    end
+    
+    it 'should not extend parameter' do
+      container[:foo] = 'bar'
+      lambda { 
+        container.extends(:foo) { |p, c| 'foo' } 
+      }.should raise_error(ArgumentError)
+    end
+    
+    it 'should raise KeyError if service not found' do
+      lambda { 
+        container.extends(:notfound) { |p, c| }
+      }.should raise_error(KeyError)
+    end
     
   end
   

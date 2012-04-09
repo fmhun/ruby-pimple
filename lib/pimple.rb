@@ -26,8 +26,22 @@ class Pimple < Hash
     end
   end
   
-  def extend
-    # Not implemented yet
+  def raw(key)
+    self.fetch key
+  rescue
+    raise KeyError, "Identifier \"#{key}\" is not defined."
+  end
+  
+  def extends(key)
+    factory = self.raw(key)
+    
+    unless factory.kind_of?(Proc)
+      raise ArgumentError, "Identifier #{key} does not contain an object definition."
+    end
+    
+    lambda do |c|
+      yield(factory.call(c), c)
+    end
   end
   
 end
