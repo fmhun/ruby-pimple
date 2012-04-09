@@ -10,8 +10,6 @@ Gem::Specification.new do |s|
   s.description = s.summary = "A lightweight dependency injection container for Ruby"
 
   s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
-	s.extra_rdoc_files = ['README.md']
 	s.license = 'MIT'
 
   s.add_development_dependency "rake"
