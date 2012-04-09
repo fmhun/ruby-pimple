@@ -1,6 +1,6 @@
 class Pimple < Hash
   
-  VERSION = '0.0.2.beta'
+  VERSION = '0.0.3.beta'
   
   # Initialize a container with some default parameters
   def initialize(parameters={})
