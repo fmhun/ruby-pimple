@@ -4,6 +4,8 @@ This is the Ruby implementation of Pimple, originally a leightweight Dependancy 
 
 Refer to [the original documentation](http://pimple.sensiolabs.org/) for more details about Pimple, you could found better explanations on the topic.
 
+[![Build Status](https://secure.travis-ci.org/floomoon/ruby-pimple.png)](http://travis-ci.org/floomoon/ruby-pimple)
+
 ## Installation
 
 Install with RubyGems :
