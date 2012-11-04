@@ -14,7 +14,7 @@ class Pimple < Hash
   #
   # @return [Object]
   def [](key)
-    obj = self.fetch key
+    obj = self.fetch(key)
     obj.kind_of?(Proc) ? obj.call(self) : obj
   rescue
     raise KeyError, "Identifier \"#{key}\" is not defined."
@@ -89,11 +89,11 @@ class Pimple < Hash
     end
   end
 
-  def set(name, opt={}, &blk)
+  def set(name, options={}, &block)
     case
-    when opt.class != Hash then self[name]= opt
-    when blk != nil then self[name] = wrap_value_or_block(opt,blk)
-    when opt[:value] != nil? then  self[name] = wrap_value_or_block(opt,opt[:value])
+    when options.class   != Hash then self[name] = options
+    when block           != nil  then self[name] = wrap_value_or_block(options, block)
+    when options[:value] != nil? then self[name] = wrap_value_or_block(options, options[:value])
     end
   end
 
@@ -103,18 +103,18 @@ class Pimple < Hash
 
   protected
 
-  def method_missing(meth, *args, &blk)
+  def method_missing(method, *args, &block)
     case
-    when args[0] then set(meth, args[0], &blk)
-    when (args.length == 0 && blk == nil) then get(meth)
-    when args.length == 0 then set(meth, {}, &blk)
+    when args[0] then set(method, args[0], &block)
+    when args.length == 0 && block == nil then get(method)
+    when args.length == 0 then set(method, {}, &block)
     end
   end
 
-  def wrap_value_or_block(opt, value_or_block)
+  def wrap_value_or_block(options, value_or_block)
     case
-    when opt[:share]   == true then apply_wrap_method(:share, value_or_block)
-    when opt[:protect] == true then apply_wrap_method(:protect, value_or_block)
+    when options[:share]   == true then apply_wrap_method(:share, value_or_block)
+    when options[:protect] == true then apply_wrap_method(:protect, value_or_block)
     else
       value_or_block
     end
@@ -124,7 +124,7 @@ class Pimple < Hash
     if value_or_block.class != Proc
       send(method, &proc { value_or_block })
     else
-      send method, &value_or_block
+      send(method, &value_or_block)
     end
   end
 end
