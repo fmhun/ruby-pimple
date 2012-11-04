@@ -19,6 +19,18 @@ class Pimple < Hash
   rescue
     raise KeyError, "Identifier \"#{key}\" is not defined."
   end
+  
+  def get(name)
+    self[name]
+  end
+  
+  def set(name, options={}, &block)
+    case
+    when options.class   != Hash then self[name] = options
+    when block           != nil  then self[name] = wrap_value_or_block(options, block)
+    when options[:value] != nil? then self[name] = wrap_value_or_block(options, options[:value])
+    end
+  end
 
   # Create a protected parameter.
   #
@@ -87,18 +99,6 @@ class Pimple < Hash
     lambda do |c|
       yield(factory.call(c), c)
     end
-  end
-
-  def set(name, options={}, &block)
-    case
-    when options.class   != Hash then self[name] = options
-    when block           != nil  then self[name] = wrap_value_or_block(options, block)
-    when options[:value] != nil? then self[name] = wrap_value_or_block(options, options[:value])
-    end
-  end
-
-  def get(name)
-    self[name]
   end
 
   protected
