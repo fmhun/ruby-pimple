@@ -30,7 +30,6 @@ describe 'Getter And Setter' do
 
     end
 
-
     it "should get a service using method_missing getter with no block" do
 
       @container.db_host "127.0.0.1"
@@ -43,5 +42,21 @@ describe 'Getter And Setter' do
 
   end
 
+  describe "getter" do
+
+    before(:each) do
+      @container= Pimple.new
+      @container.db_host "127.0.0.1"
+      @container.db "mysql://#{@container[:db_host]}"
+    end
+    
+    it "should get a service with get" do 
+      @container.get(:db).should == "mysql://127.0.0.1"
+    end
+
+    it "should get a service with method_missing" do 
+      @container.db.should == "mysql://127.0.0.1"
+    end
+  end
 
 end

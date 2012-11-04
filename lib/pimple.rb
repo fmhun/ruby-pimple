@@ -96,12 +96,19 @@ class Pimple < Hash
     when opt[:value] != nil? then  self[name] = opt[:value]
     end
   end
+  
+  
+  def get(name)
+    self[name]
+  end
 
   def method_missing(meth, *args, &blk)
 
     case
     when args[0] then set(meth,args[0],&blk)
+    when (args.length == 0 && blk == nil) then get(meth)
     when args.length == 0 then set(meth,{},&blk)
+    
     end
 
   end
