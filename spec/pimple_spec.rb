@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Pimple do
 
   describe '.new' do
-
+    
     it 'should be a type of Hash' do
       Pimple.new.kind_of?(Hash).should be_true
     end
@@ -12,7 +12,6 @@ describe Pimple do
       params = { :redis_classname => 'Redis' }
       Pimple.new(params)[:redis_classname].should == 'Redis'
     end
-
   end
 
   describe '.[]' do
@@ -37,7 +36,6 @@ describe Pimple do
     it 'should raise KeyError if service not found' do
       lambda { container[:notfound] }.should raise_error(KeyError)
     end
-
   end
 
   describe '.protect' do
@@ -58,8 +56,7 @@ describe Pimple do
     end
 
     describe "with method missing" do
-
-       let(:container) { Pimple.new }
+      let(:container) { Pimple.new }
 
       it 'should define anonymous function as parameter' do
         container.protected(:protect => true) { rand(1000) }
@@ -76,32 +73,27 @@ describe Pimple do
       it 'should raise ArgumentError when block is missing' do
         lambda { container.protect }.should raise_error(ArgumentError)
       end
-
     end
 
+    describe "with set" do
+      let(:container) { Pimple.new }
 
-  describe "with set" do
+      it 'should define anonymous function as parameter' do
+        container.set(:protected,:protect => true) { rand(1000) }
+        container[:protected].should_not equal(container[:protected])
+      end
 
-     let(:container) { Pimple.new }
+      let(:container) { Pimple.new }
 
-    it 'should define anonymous function as parameter' do
-      container.set(:protected,:protect => true) { rand(1000) }
-      container[:protected].should_not equal(container[:protected])
+      it 'should define anonymous function as parameter by Proc.new way' do
+         container.set(:protected,:protect => true) { rand(1000) }
+        container[:protected].should_not equal(container[:protected])
+      end
+
+      it 'should raise ArgumentError when block is missing' do
+        lambda { container.protect }.should raise_error(ArgumentError)
+      end
     end
-
-    let(:container) { Pimple.new }
-
-    it 'should define anonymous function as parameter by Proc.new way' do
-       container.set(:protected,:protect => true) { rand(1000) }
-      container[:protected].should_not equal(container[:protected])
-    end
-
-    it 'should raise ArgumentError when block is missing' do
-      lambda { container.protect }.should raise_error(ArgumentError)
-    end
-
-  end
-
   end
 
   describe '.share' do
@@ -123,33 +115,25 @@ describe Pimple do
       container[:service].should equal(container[:service])
     end
 
-
     describe "shared with get and method missing" do
-
       let(:container) { Pimple.new }
-
 
       it 'should get the same instance each time [](key) method is invoked' do
         container.foo 'bar'
         container.service(:share => true) { |c| Service.new(c[:foo]) }
         container.service.should equal(container[:service])
       end
-
     end
 
     describe "shared with set" do
-
       let(:container) { Pimple.new }
-
 
       it 'should get the same instance each time [](key) method is invoked' do
         container.foo 'bar'
         container.set :service, share:true,value:Service.new(container.foo)
         container.service.should equal(container[:service])
       end
-
     end
-
   end
 
   describe '.raw' do
@@ -163,7 +147,6 @@ describe Pimple do
     it 'should raise KeyError exception if service not defined' do
       lambda { container.raw :notfound }.should raise_error(KeyError)
     end
-
   end
 
   describe '.extends' do
@@ -208,7 +191,5 @@ describe Pimple do
         container.extends(:notfound) { |p, c| }
       }.should raise_error(KeyError)
     end
-
   end
-
 end

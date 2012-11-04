@@ -89,16 +89,13 @@ class Pimple < Hash
     end
   end
 
-  def set(name,opt={},&blk)
-
-
+  def set(name, opt={}, &blk)
     case
     when opt.class != Hash then self[name]= opt
     when blk != nil then self[name] = wrap_value_or_block(opt,blk)
     when opt[:value] != nil? then  self[name] = wrap_value_or_block(opt,opt[:value])
     end
   end
-
 
   def get(name)
     self[name]
@@ -107,34 +104,27 @@ class Pimple < Hash
   protected
 
   def method_missing(meth, *args, &blk)
-
     case
-    when args[0] then set(meth,args[0],&blk)
+    when args[0] then set(meth, args[0], &blk)
     when (args.length == 0 && blk == nil) then get(meth)
-    when args.length == 0 then set(meth,{},&blk)
-
+    when args.length == 0 then set(meth, {}, &blk)
     end
-
   end
 
-  def wrap_value_or_block(opt,value_or_block)
+  def wrap_value_or_block(opt, value_or_block)
     case
-    when opt[:share] == true then apply_wrap_method(:share,value_or_block)
-    when opt[:protect] == true then apply_wrap_method(:protect,value_or_block)
-
+    when opt[:share]   == true then apply_wrap_method(:share, value_or_block)
+    when opt[:protect] == true then apply_wrap_method(:protect, value_or_block)
     else
       value_or_block
     end
-
   end
 
-  def apply_wrap_method(method,value_or_block)
+  def apply_wrap_method(method, value_or_block)
     if value_or_block.class != Proc
       send(method, &proc { value_or_block })
     else
       send method, &value_or_block
     end
   end
-
-
 end
