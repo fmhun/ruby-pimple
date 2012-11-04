@@ -19,11 +19,8 @@ class Pimple < Hash
   rescue
     raise KeyError, "Identifier \"#{key}\" is not defined."
   end
-  
-  def get(name)
-    self[name]
-  end
-  
+  alias :get :[]
+     
   def set(name, options={}, &block)
     case
     when options.class   != Hash then self[name] = options
