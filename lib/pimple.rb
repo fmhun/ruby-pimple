@@ -90,8 +90,8 @@ class Pimple < Hash
   end
 
   def set(name,opt={},&blk)
-    
-    
+
+
     case
     when opt.class != Hash then self[name]= opt
     when blk != nil then self[name] = wrap_value_or_block(opt,blk)
@@ -118,19 +118,23 @@ class Pimple < Hash
   end
 
   def wrap_value_or_block(opt,value_or_block)
-    case 
-      when opt[:share] == true 
-        if value_or_block.class != Proc
-          p 999
-          share { value_or_block }
-        else
-          p 1000
-          share(&value_or_block)
-        end
-      else
-        value_or_block
+    case
+    when opt[:share] == true then apply_wrap_method(:share,value_or_block)
+    when opt[:protect] == true then apply_wrap_method(:protect,value_or_block)
+
+    else
+      value_or_block
     end
-    
+
   end
+
+  def apply_wrap_method(method,value_or_block)
+    if value_or_block.class != Proc
+      send(method, &proc { value_or_block })
+    else
+      send method, &value_or_block
+    end
+  end
+
 
 end
