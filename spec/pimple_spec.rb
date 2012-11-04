@@ -78,6 +78,28 @@ describe Pimple do
        container[:service].should equal(container[:service])
     end
     
+    
+    describe "shared with get and method missing" do
+      
+      it 'should get the same instance each time [](key) method is invoked' do
+        container.foo 'bar'
+        container.service(:share => true) { |c| Service.new(c[:foo]) }
+        container.service.should equal(container[:service])
+      end
+      
+    end
+    
+    
+    describe "shared with set" do
+      
+      it 'should get the same instance each time [](key) method is invoked' do
+        container.foo 'bar'
+        container.set :service, share:true,value:Service.new(container.foo)  
+        container.service.should equal(container[:service])
+      end
+      
+    end
+    
   end
   
   describe '.raw' do

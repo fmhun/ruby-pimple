@@ -90,17 +90,21 @@ class Pimple < Hash
   end
 
   def set(name,opt={},&blk)
+    
+    
     case
     when opt.class != Hash then self[name]= opt
-    when blk != nil then self[name] = blk
-    when opt[:value] != nil? then  self[name] = opt[:value]
+    when blk != nil then self[name] = wrap_value_or_block(opt,blk)
+    when opt[:value] != nil? then  self[name] = wrap_value_or_block(opt,opt[:value])
     end
   end
-  
-  
+
+
   def get(name)
     self[name]
   end
+
+  protected
 
   def method_missing(meth, *args, &blk)
 
@@ -108,9 +112,25 @@ class Pimple < Hash
     when args[0] then set(meth,args[0],&blk)
     when (args.length == 0 && blk == nil) then get(meth)
     when args.length == 0 then set(meth,{},&blk)
-    
+
     end
 
+  end
+
+  def wrap_value_or_block(opt,value_or_block)
+    case 
+      when opt[:share] == true 
+        if value_or_block.class != Proc
+          p 999
+          share { value_or_block }
+        else
+          p 1000
+          share(&value_or_block)
+        end
+      else
+        value_or_block
+    end
+    
   end
 
 end
